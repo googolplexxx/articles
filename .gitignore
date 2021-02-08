@@ -3,4 +3,4 @@ __pycache__/
 .vscode/
 database.db
 config.json
-
+migrations/
