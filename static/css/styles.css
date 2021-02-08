@@ -1,0 +1,238 @@
+@font-face {
+	font-family: 'Georgia';
+	src: url(/static/ttf/Georgia.ttf)
+}
+@font-face {
+	font-family: 'OpenSans';
+	src: url(/static/ttf/OpenSans-Regular.ttf)
+}
+@font-face {
+	font-family: 'OpenSans Light';
+	src: url(/static/ttf/OpenSans-Light.ttf)
+}
+@font-face {
+	font-family: 'OpenSans Bold';
+	src: url(/static/ttf/OpenSans-Bold.ttf)
+}
+
+#cursor {
+	position: absolute;
+	width: 1px;
+	background-color: #111;
+}
+
+.blink {
+	animation: blink 1s ease-in-out infinite;
+}
+
+.smooth {
+	transition: all 60ms ease-out;
+}
+
+.transparent {
+	opacity: 0;
+}
+
+@keyframes blink {
+	0% {opacity: 1;}
+	50% {opacity: 0;}
+	100% {opacity: 1;}
+}
+
+body {
+	margin: 0;
+	padding: 0 20px;
+	font-family: Georgia;
+	font-size: 18px;
+	color: #111;
+	background-color: #eee;
+	min-height: 100vh;
+}
+
+main {
+	margin: 0 auto;
+	max-width: 770px;
+	display: block;
+}
+
+article {
+	display: inline-block;
+	position: relative;
+	margin: 0 0 -40px;
+	width: 650px;
+}
+
+#button-wrapper {
+	margin: 50px 0 0 20px;
+	vertical-align: top;
+	display: inline-block;
+	width: 100px;
+}
+
+::selection, .selected {
+	background-color: #ccc;
+	color: #111;
+}
+
+#content-wrapper {
+	outline: 0;
+	display: block;
+}
+
+#content-wrapper[contenteditable="true"] {
+	caret-color: transparent;
+	cursor: text;
+}
+
+#content-wrapper > h1, #content-wrapper > p {
+	position: relative;
+	transition: color 200ms ease-out, margin 200ms ease-out;
+}
+
+.text-content > span{
+	white-space: pre-wrap;
+}
+
+p:not(#author) {
+	margin: 12px 0;
+}
+
+#title {
+	margin-top: 40px;
+	margin-bottom: 8px;
+	cursor: text;
+	display: block;
+	font-family: 'OpenSans Bold';
+	font-size: 1.8em;
+	font-weight: 600;
+	color: #000;
+}
+
+#author {
+	margin-top: 0px;
+	cursor: text;
+	display: block;
+	font-family: 'OpenSans';
+	font-size: 15px;
+}
+
+#content-wrapper > h1::before, #content-wrapper > p::before {
+	transition: color 200ms ease-out;
+}
+
+.breaker{
+	width: 20px!important;
+	clear: both;
+}
+
+.empty::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	content: attr(data-placeholder);
+	color: #888;
+}
+
+#title.empty::before, #author.empty::before {
+	font-family: 'OpenSans Light';
+	font-weight: 100;
+}
+
+.bad {
+	color: #c00 !important;
+}
+
+
+#content-wrapper > h1::after, #content-wrapper > p::after {
+	display: flex;
+	align-items: center;
+	position: absolute;
+	padding: 0 7px;
+	margin: 0 15px;
+	height: 100%;
+	top: 0;
+	right: 100%;
+	width: 100px;
+	content: attr(data-error);
+	font-family: 'OpenSans';
+	font-size: 13px;
+	font-weight: 100;
+	color: #c00;
+	border-width: 0;
+	border-right-width: 2px;
+	border-style: solid;
+	border-color: #c00;
+	opacity: 0;
+	transition: opacity 200ms ease-out;
+}
+
+.bad::before {
+	color: #c00;
+}
+
+.bad::after {
+	opacity: 1 !important;
+}
+
+textarea {
+	left: 0;
+	position: absolute;
+	word-wrap: break-word;
+	overflow: hidden;
+	resize: vertical;
+	width: 650px;
+	max-width: 650px;
+	height: 1px;
+	padding: 0;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.button {
+	background-color: #eee;
+	width: 100%;
+	padding: 4px 12px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #111;
+	border-radius: 17px;
+	font-family: 'OpenSans Bold';
+	font-size: 16px;
+	text-transform: uppercase;
+	outline: none;
+	cursor: pointer;
+	transition: background-color 100ms ease-out;
+}
+
+.button:hover {
+	background-color: #ddd;
+}
+
+.button:active {
+	background-color: #ccc;
+}
+
+
+@media(max-width: 1065px) {
+	.bad {
+		margin-left: 125px !important;
+	}
+}
+
+@media(max-width: 850px) {
+	article {
+		width: 100%;
+		max-width: 100%;
+	}
+	#button-wrapper {
+		margin: 20px 0;
+		display: block;
+	}
+}
+
+@media(max-width: 707px) {
+	textarea {
+		width: 100%;
+		max-width: 100%;
+	}
+}

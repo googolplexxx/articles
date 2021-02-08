@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/css/styles.css">
+	<title>New Article</title>
+</head>
+<body>
+	<main>
+		<article>
+			<div id="cursor" class="transparent"></div>
+			<div id="content-wrapper" contenteditable="true" spellcheck="false">
+				<h1 id="title" class="empty" data-placeholder="Title" data-font="600 1.8em OpenSans Bold">
+					<span class="text-content">
+						<br>
+					</span>
+				</h1>
+				<p id="author" class="empty" data-placeholder="Author's name" data-font="15px OpenSans">
+					<span class="text-content">
+						<br>
+					</span>
+				</p>
+				<p class="empty" data-placeholder="Article...">
+					<span class="text-content">
+						<br>
+					</span>
+				</p>
+			</div>
+			<textarea autocomplete="off"></textarea>
+		</article><!--
+		кто удалит комент тот чмо
+		--><div id="button-wrapper">
+			<button class="button" style="display: none;">publish</button>
+		</div>
+	</main>
+	<script src="/static/js/index.js"></script>
+</body>
+</html>
