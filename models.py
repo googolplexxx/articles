@@ -58,9 +58,18 @@ class Article(db.Model):
 	author_user: AnonymousUser = relationship("AnonymousUser")
 
 	author: str = Column(String(length=100))
-	time: datetime = Column(DateTime())
+	date: datetime = Column(DateTime())
 	title: str = Column(String(length=250))
 
-	content_chunks: list = relationship("Chunk", order_by="Chunk.order", collection_class=ordering_list("order"), cascade="all,delete")
+	content_chunks: list = relationship("Chunk", order_by="Chunk.order", collection_class=ordering_list("order"), cascade="all,delete,delete-orphan")
+
+	@property
+	def text_content(self):
+		return "\n".join((chunk.text for chunk in self.content_chunks if isinstance(chunk, Paragraph)))
+
+	@property
+	def date_text(self):
+		months = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+		return f"{self.date.hour:02}:{self.date.minute:02}, {months[self.date.month - 1]} {self.date.day:02}, {self.date.year}"
 
 	__tablename__ = "article"

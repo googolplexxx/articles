@@ -10,7 +10,9 @@ from datetime import datetime, timedelta
 
 from flask import Flask, make_response, render_template, send_file, request, redirect
 from flask_migrate import Migrate
+from flask_minify import minify
 from jwt import encode, decode
+from transliterate import translit
 
 from models import *
 
@@ -23,7 +25,11 @@ JWT_SECRET = getenv("JWT_SECRET", "maga2020!")
 db.app = app
 db.init_app(app)
 
+minify(app=app, html=True, js=False, cssless=False)
+
 migrate = Migrate(app, db)
+
+host = "https://da1cd24c4f41.ngrok.io"
 
 @app.cli.command("create_all")
 def create_all():
@@ -52,15 +58,25 @@ def set_cookie(response):
 
 @app.route("/favicon.ico")
 def favicon():
-	return send_file("static/ico/favicon.ico")
+	return send_file("assets/favicon.ico")
 
 @app.route("/")
 @app.route("/<id>", methods=["GET"])
-def article(id=None):
+def article_view(id=None):
+	meta_tags = {
+		"title": "New Article",
+		"description": "You can write your own article using this website.",
+		"url": host
+	}
 	if id:
-		if Article.query.get(id) is None:
+		article: Article = Article.query.get(id)
+		if article is None:
 			return redirect("/")
-	return render_template("index.html")
+		else:
+			meta_tags["title"] = article.title
+			meta_tags["description"] = article.text_content[:247] + ("..." if len(article.text_content) > 247 else "")
+			meta_tags["url"] = host + f"/{id}"
+	return render_template("index.html", meta_tags=meta_tags)
 
 @app.route("/save", methods=["POST"])
 def save_article():
@@ -94,14 +110,17 @@ def save_article():
 
 	article: Article = Article.query.get(id)
 	if (article is None):
-		id = f"{title.replace(' ', '-')}-{str(int(now.timestamp()))}".lower()
-		article = Article(id=id, author_user=request.environ["user"], author=author, time=now, title=title)
+		id = "-".join("".join((char for char in translit(title, reversed=True) if char.isalnum() or char in (' ', '-', '_'))).split())
+		id = f"{id}-{int(now.timestamp())}"
+		article = Article(id=id, author_user=request.environ["user"], author=author, date=now, title=title)
 		db.session.add(article)
 	elif article.author_user != request.environ["user"]:
 		return (403, {"ok": False})
 
 	article.title = title
 	article.author = author
+	for chunk in article.content_chunks:
+		db.session.delete(chunk)
 	article.content_chunks = []
 	for line in lines[2:]:
 		new_paragraph = Paragraph(text=line)
@@ -110,25 +129,33 @@ def save_article():
 
 	db.session.commit()
 
-	return {"ok": True, "id": id}
+
+	return {
+		"ok": True,
+		"id": id,
+		"title": title,
+		"date": article.date_text
+	}
 
 @app.route("/get_article_content")
 def get_article_content():
 	id = request.args.get("id", "")
 
-	article = Article.query.get(id)
+	article: Article = Article.query.get(id)
 	if (article is None):
 		return {
 			"text": "",
+			"title": "New Article",
 			"editable": True
 		}
 
-	newline = "\n"
-	text = f"{article.title}\n{article.author}\n{newline.join((chunk.text for chunk in article.content_chunks))}"
+	text = f"{article.title}\n{article.author}\n{article.text_content}"
 
 	return {
 		"text": text,
-		"editable": request.environ["user"] == article.author_user
+		"editable": request.environ["user"] == article.author_user,
+		"date": article.date_text,
+		"title": article.title
 	}
 
 if __name__ == "__main__":
