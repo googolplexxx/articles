@@ -242,15 +242,12 @@ textarea {
 		width: 100%;
 		max-width: 100%;
 	}
-	#button-wrapper {
-		margin: 20px 0;
-		float: left;
-	}
-}
-
-@media(max-width: 707px) {
 	textarea {
 		width: 100%;
 		max-width: 100%;
+	}
+	#button-wrapper {
+		margin: 20px 0;
+		float: left;
 	}
 }

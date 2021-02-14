@@ -8,12 +8,7 @@ const AUTHOR_MAX_LENGTH = 100;
 contentWrapper = select("#content-wrapper");
 textarea = select("textarea");
 
-window.prevCursorPos = null;
-
 String.prototype.splice = function (start, delCount, newSubStr="") {
-	if (!delCount) {
-		delCount = this.length;
-	}
 	return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
 };
 
@@ -96,7 +91,7 @@ function splitNodeAt(node, at, ...insert) {
 
 	at -= previousLength;
 
-	let leftPart = document.createTextNode(cutNode.textContent.splice(at)), rightPart = document.createTextNode(cutNode.textContent.slice(at));
+	let leftPart = document.createTextNode(cutNode.textContent.slice(0, at)), rightPart = document.createTextNode(cutNode.textContent.slice(at));
 
 	for (let currentNode = cutNode; currentNode !== node; currentNode = currentNode.parentNode) {
 		let newLeftPart = currentNode.parentNode.cloneNode(false);
@@ -226,14 +221,17 @@ function params(json) {
 async function onLoad(e) {
 	mousedown = false;
 	id = window.location.pathname.replaceAll("/", "");
-	const args = {
-		id
-	}
-	const response = await (await fetch(`/get_article_content?${params(args)}`)).json();
+	const response = await (await fetch(`/${id || "empty"}/raw_content`)).json();
 	select("title").textContent = response.title;
 	textarea.value = response.text || localStorage.getItem("draft");
+	textarea.selectionStart = textarea.selectionEnd = 0;
+	let lines = textarea.value.split("\n");
+	if (lines.length < 3) {
+		textarea.value += "\n".repeat(3 - lines.length);
+	}
 	editable = response.editable;
 	editing = id == "";
+	buffer = new UndoRedoBuffer(textarea.value);
 	if (!editing) {
 		const dateNode = document.createElement("span");
 		dateNode.id = "date";
@@ -269,6 +267,25 @@ function onTextareaKeydown(e, startOffset, endOffset) {
 	const prevContent = textarea.value;
 	const prevSelectionStart = textarea.selectionStart;
 	const prevSelectionEnd = textarea.selectionEnd;
+	const prevSelectionDirection = textarea.selectionDirection;
+	let undoRedo = false;
+	if (e && e.ctrlKey) {
+		if (e.code === "KeyZ") {
+			e.preventDefault();
+			undoRedo = true;
+			let newVal, newSel;
+			[newVal, newSel] = buffer.undo(prevSelectionStart, prevSelectionEnd, prevSelectionDirection);
+			textarea.value = newVal;
+			textarea.setSelectionRange(...newSel);
+		} else if (e.code === "KeyY") {
+			e.preventDefault();
+			undoRedo = true;
+			let newVal, newSel;
+			[newVal, newSel] = buffer.redo();
+			textarea.value = newVal;
+			textarea.setSelectionRange(...newSel);
+		}
+	}
 	setTimeout(() => {
 		if (window.id === "") {
 			localStorage.setItem("draft", textarea.value);
@@ -279,7 +296,10 @@ function onTextareaKeydown(e, startOffset, endOffset) {
 			selectionStart = startOffset;
 		}
 		if (endOffset) {
-			selectionEnd = endOffset
+			selectionEnd = endOffset;
+		}
+		if (changed && !undoRedo) {
+			buffer.push(textarea.value, prevSelectionStart, prevSelectionEnd, prevSelectionDirection);
 		}
 		const caretMoved = selectionStart !== prevSelectionStart || selectionEnd !== prevSelectionEnd;
 		let lines = textarea.value.split("\n");
@@ -343,6 +363,9 @@ function onTextareaKeydown(e, startOffset, endOffset) {
 				setTimeout(() => {addClass(select("#cursor"), "blink")}, 250);
 			}
 			textarea.style.top = `${select("#cursor-pos").getBoundingClientRect().top + window.scrollY}px`;
+			textarea.style.height = `${getLineHeight(contentWrapper.children[getLine(selectionStart)])}px`;
+			textarea.scrollIntoViewIfNeeded(false);
+			if (window)
 			select("#cursor").style.height = `${getLineHeight(contentWrapper.children[getLine(selectionStart)])}px`;
 			select("#cursor").style.top = `${select("#cursor-pos").getBoundingClientRect().top + window.scrollY}px`;
 			select("#cursor").style.left = `${select("#cursor-pos").getBoundingClientRect().left + window.scrollX - select("article").getBoundingClientRect().left}px`;
@@ -625,13 +648,6 @@ async function onButtonClick(e) {
 	}
 }
 
-let {selectionStart, selectionEnd} = textarea;
-let lines = textarea.value.split("\n");
-if (lines.length < 3) {
-	textarea.value += "\n".repeat(3 - lines.length);
-	textarea.selectionStart = selectionStart;
-	textarea.selectionEnd = selectionEnd;
-}
 
 window.addEventListener("resize", onTextareaKeydown);
 window.addEventListener("load", onLoad);

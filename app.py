@@ -78,6 +78,12 @@ def article_view(id=None):
 			meta_tags["url"] = host + f"/{id}"
 	return render_template("index.html", meta_tags=meta_tags)
 
+def translit_or_keep(text):
+	try:
+		return translit(text, reversed=True)
+	except:
+		return text
+
 @app.route("/save", methods=["POST"])
 def save_article():
 	now = datetime.now()
@@ -110,7 +116,7 @@ def save_article():
 
 	article: Article = Article.query.get(id)
 	if (article is None):
-		id = "-".join("".join((char for char in translit(title, reversed=True) if char.isalnum() or char in (' ', '-', '_'))).split())
+		id = "-".join("".join((char for char in translit_or_keep(title) if char.isalnum() or char in (' ', '-', '_'))).split())
 		id = f"{id}-{int(now.timestamp())}"
 		article = Article(id=id, author_user=request.environ["user"], author=author, date=now, title=title)
 		db.session.add(article)
@@ -137,10 +143,8 @@ def save_article():
 		"date": article.date_text
 	}
 
-@app.route("/get_article_content")
-def get_article_content():
-	id = request.args.get("id", "")
-
+@app.route("/<id>/raw_content")
+def raw_article_content(id):
 	article: Article = Article.query.get(id)
 	if (article is None):
 		return {
