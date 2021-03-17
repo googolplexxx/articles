@@ -7,6 +7,7 @@
 
 from os import getenv
 from datetime import datetime, timedelta
+from json import loads
 
 from flask import Flask, make_response, render_template, send_file, request, redirect
 from flask_migrate import Migrate
@@ -25,7 +26,7 @@ JWT_SECRET = getenv("JWT_SECRET", "maga2020!")
 db.app = app
 db.init_app(app)
 
-minify(app=app, html=True, js=False, cssless=False)
+minify(app=app, html=True, js=False, cssless=True)
 
 migrate = Migrate(app, db)
 
@@ -88,10 +89,10 @@ def translit_or_keep(text):
 def save_article():
 	now = datetime.now()
 	text: str = request.json.get("text", "")
+	formatting = request.json.get("formatting", '{}')
 	id: str = request.json.get("id", "")
 
-	text = text.replace("\r\n", "\n")
-	text = text.replace("\r", "\n")
+	text = text.replace("\r\n", "\n").replace("\r", "\n")
 
 	lines = text.split("\n")
 
@@ -125,6 +126,7 @@ def save_article():
 
 	article.title = title
 	article.author = author
+	article.formatting = formatting
 	for chunk in article.content_chunks:
 		db.session.delete(chunk)
 	article.content_chunks = []
@@ -157,6 +159,7 @@ def raw_article_content(id):
 
 	return {
 		"text": text,
+		"formatting": article.formatting,
 		"editable": request.environ["user"] == article.author_user,
 		"date": article.date_text,
 		"title": article.title

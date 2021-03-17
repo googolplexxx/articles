@@ -1,26 +1,87 @@
-@font-face {
-	font-family: 'Georgia';
-	src: url(/static/ttf/Georgia.ttf)
-}
-@font-face {
-	font-family: 'OpenSans';
-	src: url(/static/ttf/OpenSans-Regular.ttf)
-}
-@font-face {
-	font-family: 'OpenSans Light';
-	src: url(/static/ttf/OpenSans-Light.ttf)
-}
-@font-face {
-	font-family: 'OpenSans Bold';
-	src: url(/static/ttf/OpenSans-Bold.ttf)
-}
-
 #cursor {
 	position: absolute;
 	pointer-events: none;
 	width: 1px;
 	background-color: #000;
 	z-index: 10;
+}
+
+#context-menu {
+	position: absolute;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	width: fit-content;
+	min-width: 150px;
+	max-width: 350px;
+	padding: 0;
+	background-color: transparent;
+	z-index: 10;
+	transition: all 100ms ease-out;
+}
+
+#context-menu.visible {
+	opacity: 1;
+	transition: all 150ms ease-out;
+}
+
+#context-menu.invisible {
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 100ms ease-out;
+}
+
+#context-menu > hr {
+	border: 9px solid #111;
+	width: 100%;
+	height: 1px;
+	background-color: #999;
+	margin: 0;
+}
+
+#context-menu > div {
+	width: 100%;
+	padding: 9px;
+	align-content: center;
+	cursor: pointer;
+	background-color: #111;
+	transition: background-color 100ms linear;
+	color: #fff;
+	font-size: 13px;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#context-menu > div > .keybind {
+	float: right;
+	color: #999;
+}
+
+#context-menu > div > .check {
+	float: right;
+}
+
+#context-menu > div > .check::before {
+	content: "\2713";
+	margin-left: 5px;
+}
+
+#context-menu > div:first-child {
+	border-radius: 10px 10px 0 0;
+}
+
+#context-menu > div:last-child {
+	border-radius: 0 0 10px 10px;
+}
+
+#context-menu > div:hover {
+	background-color: #444;
+}
+
+.underlined {
+	text-decoration: underline;
 }
 
 .blink {
@@ -44,7 +105,7 @@
 body {
 	margin: 0;
 	padding: 0 20px;
-	font-family: Georgia;
+	font-family: Georgia, 'Times New Roman', Times, serif;
 	font-size: 18px;
 	color: #111;
 	background-color: #eee;
@@ -111,9 +172,9 @@ p:not(#author) {
 	margin-bottom: 8px;
 	cursor: text;
 	display: block;
-	font-family: 'OpenSans Bold';
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-weight: bold;
 	font-size: 32px;
-	font-weight: 600;
 	color: #000;
 }
 
@@ -121,7 +182,7 @@ p:not(#author) {
 	margin: 0;
 	cursor: text;
 	display: block;
-	font-family: 'OpenSans';
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	font-size: 14px;
 }
 
@@ -143,7 +204,7 @@ p:not(#author) {
 }
 
 #title.empty::before, #author.empty::before {
-	font-family: 'OpenSans Light';
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	font-weight: 100;
 }
 
@@ -172,9 +233,9 @@ p:not(#author) {
 	right: 100%;
 	width: 100px;
 	content: attr(data-error);
-	font-family: 'OpenSans';
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	font-size: 13px;
-	font-weight: 100;
+	font-weight: normal;
 	color: #c00;
 	border-width: 0;
 	border-right-width: 2px;
@@ -214,7 +275,8 @@ textarea {
 	border-style: solid;
 	border-color: #111;
 	border-radius: 17px;
-	font-family: 'OpenSans Bold';
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-weight: bold;
 	font-size: 16px;
 	text-transform: uppercase;
 	outline: none;
@@ -229,7 +291,6 @@ textarea {
 .button:active {
 	background-color: #ccc;
 }
-
 
 @media(max-width: 1065px) {
 	.bad {

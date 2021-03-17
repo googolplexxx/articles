@@ -13,6 +13,45 @@
 	<link rel="stylesheet" href="/static/css/styles.css" />
 </head>
 <body>
+	<div id="context-menu" class="invisible">
+		<div id="undo" class="context-menu-item">
+			Undo
+			<span class="keybind">Ctrl+Z</span>
+		</div>
+		<div id="redo" class="context-menu-item">
+			Redo
+			<span class="keybind">Ctrl+Y</span>
+		</div>
+		<hr>
+		<div id="copy" class="context-menu-item">
+			Copy
+			<span class="keybind">Ctrl+C</span>
+		</div>
+		<div id="cut" class="context-menu-item">
+			Cut
+			<span class="keybind">Ctrl+X</span>
+		</div>
+		<div id="paste" class="context-menu-item">
+			Paste
+			<span class="keybind">Ctrl+V</span>
+		</div>
+		<hr>
+		<div id="bold" class="context-menu-item">
+			<b>Bold</b>
+			<span class="keybind">Ctrl+B</span>
+		</div>
+		<div id="italic" class="context-menu-item">
+			<i>Italic</i>
+			<span class="keybind">Ctrl+I</span>
+		</div>
+		<div id="strike" class="context-menu-item">
+			<strike>Strikethrough</strike>
+		</div>
+		<div id="underlined" class="context-menu-item">
+			<span class="underlined">Underlined</span>
+			<span class="keybind">Ctrl+U</span>
+		</div>
+	</div>
 	<main>
 		<article>
 			<div id="cursor" class="transparent"></div>
@@ -25,6 +64,7 @@
 	</main>
 	<script src="/static/js/diff.js"></script>
 	<script src="/static/js/undoredo.js"></script>
+	<script src="/static/js/formatting.js"></script>
 	<script src="/static/js/index.js"></script>
 </body>
 </html>

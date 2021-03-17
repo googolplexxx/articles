@@ -61,6 +61,7 @@ class Article(db.Model):
 	date: datetime = Column(DateTime())
 	title: str = Column(String(length=250))
 
+	formatting: str = Column(Text)
 	content_chunks: list = relationship("Chunk", order_by="Chunk.order", collection_class=ordering_list("order"), cascade="all,delete,delete-orphan")
 
 	@property
